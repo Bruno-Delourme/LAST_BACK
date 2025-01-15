@@ -1,11 +1,12 @@
 const axios = require('axios');
+const config = require('../config/config');
 
 class MovieService {
     constructor() {
         this.api = axios.create({
-            baseURL: process.env.API_BASE_URL,
+            baseURL: config.API_BASE_URL,
             headers: {
-                'Authorization': `Bearer ${process.env.API_TOKEN}`,
+                'Authorization': `Bearer ${config.getApiToken()}`,
                 'Content-Type': 'application/json'
             }
         });
