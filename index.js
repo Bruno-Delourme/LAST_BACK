@@ -7,7 +7,15 @@ const { PORT } = require("./app/config/config.js");
 
 const app = express();
 
-app.use(cors());
+// Configuration CORS 
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: true }));
 
