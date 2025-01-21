@@ -12,4 +12,10 @@ router.get('/test', (req, res) => {
 router.get('/movies/latest', cacheMiddleware, movieController.getLatestMovies);
 router.get('/tv/latest', cacheMiddleware, movieController.getLatestTVShows);
 
+// Routes pour les détails avec providers
+router.get('/movies/:id', cacheMiddleware, movieController.getMovieDetails);
+router.get('/tv/:id', cacheMiddleware, movieController.getTVShowDetails);
+router.get('/movies/:id/providers', cacheMiddleware, movieController.getMovieProviders);
+router.get('/tv/:id/providers', cacheMiddleware, movieController.getTVShowProviders);
+
 module.exports = router; 

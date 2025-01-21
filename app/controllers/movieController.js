@@ -18,6 +18,46 @@ class MovieController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    async getMovieDetails(req, res) {
+        try {
+            const movieId = req.params.id;
+            const movie = await movieService.getMovieWithProviders(movieId);
+            res.json(movie);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getTVShowDetails(req, res) {
+        try {
+            const tvId = req.params.id;
+            const show = await movieService.getTVShowWithProviders(tvId);
+            res.json(show);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getMovieProviders(req, res) {
+        try {
+            const movieId = req.params.id;
+            const providers = await movieService.getWatchProviders('movie', movieId);
+            res.json(providers);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getTVShowProviders(req, res) {
+        try {
+            const tvId = req.params.id;
+            const providers = await movieService.getWatchProviders('tv', tvId);
+            res.json(providers);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = new MovieController(); 
