@@ -7,7 +7,7 @@ class MovieService {
             baseURL: process.env.API_BASE_URL,
             headers: {
                 'Authorization': `Bearer ${process.env.API_TOKEN}`,
-                'Content-Type': 'application/json'
+                'accept': 'application/json'
             }
         });
     }
@@ -57,19 +57,54 @@ class MovieService {
         }
     }
 
-    async getWatchProviders(type, id) {
+    async getProviders(type, id) {
         try {
+            console.log(`Fetching providers for ${type}/${id}`);
             const response = await this.api.get(`/${type}/${id}/watch/providers`);
-            // On récupère les providers pour la France (FR)
-            const providers = response.data.results.FR || {};
+            
+            // Vérifier si des résultats existent pour la France
+            if (!response.data.results.FR) {
+                return {
+                    id: id,
+                    country: 'FR',
+                    message: "Pas encore de plateforme disponible en France",
+                    streaming: [],
+                    rental: [],
+                    purchase: [],
+                    free: [],
+                    ads: [],
+                    link: null
+                };
+            }
+
+            const providers = response.data.results.FR;
+            
+            // Formater les providers avec leurs logos
+            const formatProviders = (providerArray) => {
+                if (!providerArray) return [];
+                return providerArray.map(provider => ({
+                    provider_id: provider.provider_id,
+                    provider_name: provider.provider_name,
+                    logo_path: provider.logo_path ? 
+                        `https://image.tmdb.org/t/p/original${provider.logo_path}` : 
+                        null,
+                    display_priority: provider.display_priority
+                }));
+            };
+
             return {
-                flatrate: providers.flatrate || [], // Streaming
-                rent: providers.rent || [],     // Location
-                buy: providers.buy || [],       // Achat
-                link: providers.link || null    // Lien TMDB pour plus de détails
+                id: id,
+                country: 'FR',
+                streaming: formatProviders(providers.flatrate),
+                rental: formatProviders(providers.rent),
+                purchase: formatProviders(providers.buy),
+                free: formatProviders(providers.free),
+                ads: formatProviders(providers.ads),
+                link: providers.link || null,
+                has_providers: !!(providers.flatrate || providers.rent || providers.buy || providers.free || providers.ads)
             };
         } catch (error) {
-            console.error('Error fetching watch providers:', error);
+            console.error('Error fetching providers:', error);
             throw new Error(`Erreur lors de la récupération des plateformes: ${error.message}`);
         }
     }
@@ -78,7 +113,7 @@ class MovieService {
         try {
             const [movieDetails, providers] = await Promise.all([
                 this.api.get(`/movie/${movieId}`),
-                this.getWatchProviders('movie', movieId)
+                this.getProviders('movie', movieId)
             ]);
 
             return {
@@ -96,7 +131,7 @@ class MovieService {
         try {
             const [showDetails, providers] = await Promise.all([
                 this.api.get(`/tv/${tvId}`),
-                this.getWatchProviders('tv', tvId)
+                this.getProviders('tv', tvId)
             ]);
 
             return {

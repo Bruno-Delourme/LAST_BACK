@@ -16,6 +16,6 @@ router.get('/tv/latest', cacheMiddleware, movieController.getLatestTVShows);
 router.get('/movies/:id', cacheMiddleware, movieController.getMovieDetails);
 router.get('/tv/:id', cacheMiddleware, movieController.getTVShowDetails);
 router.get('/movies/:id/providers', cacheMiddleware, movieController.getMovieProviders);
-router.get('/tv/:id/providers', cacheMiddleware, movieController.getTVShowProviders);
+router.get('/tv/:id/providers', cacheMiddleware, movieController.getTVProviders);
 
 module.exports = router; 
